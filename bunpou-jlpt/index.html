@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0D1117">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Bunpou">
+  <title>Bunpou JLPT — 日本語文法</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+
+<!-- OFFLINE BADGE -->
+<div id="offlineBadge">⚡ Offline Mode — Semua konten tersedia</div>
+
+<!-- INSTALL STRIP -->
+<div id="installStrip">
+  <span>Simpan sebagai app di HP kamu</span>
+  <button class="install-strip-btn" onclick="showInstallModal()">Cara Install →</button>
+</div>
+
+<!-- INSTALL MODAL -->
+<div id="installOverlay" onclick="if(event.target===this)hideInstallModal()" style="display:none">
+  <div id="installModal">
+    <div class="modal-header">
+      <div class="modal-title">
+        Pasang di Home Screen
+        <span>Gratis, tanpa Play Store, works offline</span>
+      </div>
+      <button class="modal-close" onclick="hideInstallModal()">✕</button>
+    </div>
+    <div class="os-tabs">
+      <button class="os-tab active" onclick="switchOS('android',this)">🤖 Android</button>
+      <button class="os-tab" onclick="switchOS('ios',this)">🍎 iPhone / iPad</button>
+    </div>
+    <div class="install-steps active" id="steps-android">
+      <div class="step"><div class="step-num">1</div><div class="step-text">Buka di <b>Google Chrome</b></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text">Tap ikon <b>⋮</b> pojok kanan atas</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text">Pilih <code>Tambahkan ke layar utama</code></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-text">Tap <b>Tambahkan</b> — icon 文 muncul!</div></div>
+      <div class="install-divider">atau</div>
+      <button class="direct-install-btn" id="directInstallBtn" onclick="triggerInstall()">⚡ Install Langsung</button>
+      <p class="direct-install-note" id="directInstallNote"></p>
+    </div>
+    <div class="install-steps" id="steps-ios">
+      <div class="step"><div class="step-num">1</div><div class="step-text">Buka di <b>Safari</b></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-text">Tap ikon <b>Share</b> di bawah layar</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-text">Pilih <code>Add to Home Screen</code></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-text">Tap <b>Add</b></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="header-top-row">
+      <div>
+        <h1>日本語総まとめ</h1>
+        <p>JLPT N1–N5 · Referensi & Quiz Tata Bahasa Jepang</p>
+      </div>
+      <div class="streak-badge" id="streakBadge" style="display:none">
+        <span class="streak-fire">🔥</span>
+        <span class="streak-num" id="streakNum">0</span>
+        <span class="streak-label">hari</span>
+      </div>
+    </div>
+  </div>
+  <div class="header-rule"></div>
+</header>
+
+<!-- TAB NAV -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('browse',this)">📚 Browse</button>
+  <button class="tab-btn" onclick="switchTab('quiz',this)">🎯 Quiz</button>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Ganti tema">🌙</button>
+</nav>
+
+<!-- ══════════════ BROWSE PAGE ══════════════ -->
+<div id="browsePage" class="page active">
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+
+    <!-- Row 1: Level pills -->
+    <div class="level-pills">
+      <button class="pill active-all" id="pill-all"      onclick="pillLevel('all',this)">Semua</button>
+      <button class="pill"            id="pill-n1"       onclick="pillLevel('n1',this)"><span class="pill-dot" style="background:var(--n1)"></span>N1</button>
+      <button class="pill"            id="pill-n2"       onclick="pillLevel('n2',this)"><span class="pill-dot" style="background:var(--n2)"></span>N2</button>
+      <button class="pill"            id="pill-n3"       onclick="pillLevel('n3',this)"><span class="pill-dot" style="background:var(--n3)"></span>N3</button>
+      <button class="pill"            id="pill-n4"       onclick="pillLevel('n4',this)"><span class="pill-dot" style="background:var(--n4)"></span>N4</button>
+      <button class="pill"            id="pill-n5"       onclick="pillLevel('n5',this)"><span class="pill-dot" style="background:var(--n5)"></span>N5</button>
+      <button class="pill"            id="pill-bookmark" onclick="pillBookmark(this)">⭐ Bookmark</button>
+    </div>
+
+    <!-- Week strip (muncul saat level dipilih) -->
+    <div class="week-strip" id="weekStrip"></div>
+
+    <!-- Row 2: Sort + Category -->
+    <div class="sort-cat-row">
+      <div class="sort-group">
+        <span class="sort-label">Urut:</span>
+        <button class="sort-btn active" onclick="setSort('level',this)">Level</button>
+        <button class="sort-btn"        onclick="setSort('cat',this)">Kategori</button>
+      </div>
+      <button class="cat-toggle-btn" id="catToggleBtn" onclick="toggleCatPanel()">Kategori ▾</button>
+    </div>
+
+    <!-- Category panel (collapsible) -->
+    <div class="cat-panel" id="catPanel">
+      <button class="cat-chip active-all-cat" onclick="setCat('all',this)">Semua</button>
+      <button class="cat-chip" onclick="setCat('passive',this)">Pasif</button>
+      <button class="cat-chip" onclick="setCat('causative',this)">Kausatif</button>
+      <button class="cat-chip" onclick="setCat('kasual',this)">Kasual</button>
+      <button class="cat-chip" onclick="setCat('inferensi',this)">Inferensi</button>
+      <button class="cat-chip" onclick="setCat('ekspresi',this)">Ekspresi</button>
+      <button class="cat-chip" onclick="setCat('tujuan',this)">Tujuan</button>
+      <button class="cat-chip" onclick="setCat('perubahan',this)">Perubahan</button>
+      <button class="cat-chip" onclick="setCat('keharusan',this)">Keharusan</button>
+      <button class="cat-chip" onclick="setCat('niat',this)">Niat</button>
+      <button class="cat-chip" onclick="setCat('harapan',this)">Harapan</button>
+      <button class="cat-chip" onclick="setCat('permintaan',this)">Permintaan</button>
+      <button class="cat-chip" onclick="setCat('kebiasaan',this)">Kebiasaan</button>
+    </div>
+
+    <!-- Search -->
+    <div class="search-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="search" id="searchInput" placeholder="Cari grammar, arti, bacaan..."
+        oninput="filterSearch(this.value)" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+
+    <!-- Progress Panel (SRS-powered) -->
+    <div class="progress-panel" id="progressPanel">
+      <div class="progress-panel-header">
+        <span class="progress-panel-title">📊 Progress Belajar</span>
+        <span class="progress-panel-total" id="progressPanelTotal">0 / 0 dipelajari</span>
+      </div>
+      <div class="progress-due-banner" id="progressDueBanner" style="display:none">
+        <span class="due-fire">⏰</span>
+        <span class="due-text"><strong id="dueCount">0</strong> kartu jatuh tempo hari ini</span>
+        <button class="due-review-btn" onclick="startQuickReview()">Review →</button>
+      </div>
+      <div class="progress-legend">
+        <span class="leg-item"><span class="leg-dot mature"></span>Mature</span>
+        <span class="leg-item"><span class="leg-dot young"></span>Young</span>
+        <span class="leg-item"><span class="leg-dot learning"></span>Learning</span>
+        <span class="leg-item"><span class="leg-dot unseen"></span>Belum</span>
+      </div>
+      <div class="progress-level-row">
+        <span class="progress-lv-badge n1">N1</span>
+        <div class="progress-lv-bar-wrap">
+          <div class="plv-mature"   id="plv-mature-n1"   style="width:0%"></div>
+          <div class="plv-young"    id="plv-young-n1"    style="width:0%"></div>
+          <div class="plv-learning" id="plv-learning-n1" style="width:0%"></div>
+        </div>
+        <span class="progress-lv-count" id="plv-count-n1">0/0</span>
+      </div>
+      <div class="progress-level-row">
+        <span class="progress-lv-badge n2">N2</span>
+        <div class="progress-lv-bar-wrap">
+          <div class="plv-mature"   id="plv-mature-n2"   style="width:0%"></div>
+          <div class="plv-young"    id="plv-young-n2"    style="width:0%"></div>
+          <div class="plv-learning" id="plv-learning-n2" style="width:0%"></div>
+        </div>
+        <span class="progress-lv-count" id="plv-count-n2">0/0</span>
+      </div>
+      <div class="progress-level-row">
+        <span class="progress-lv-badge n3">N3</span>
+        <div class="progress-lv-bar-wrap">
+          <div class="plv-mature"   id="plv-mature-n3"   style="width:0%"></div>
+          <div class="plv-young"    id="plv-young-n3"    style="width:0%"></div>
+          <div class="plv-learning" id="plv-learning-n3" style="width:0%"></div>
+        </div>
+        <span class="progress-lv-count" id="plv-count-n3">0/0</span>
+      </div>
+      <div class="progress-level-row">
+        <span class="progress-lv-badge n4">N4</span>
+        <div class="progress-lv-bar-wrap">
+          <div class="plv-mature"   id="plv-mature-n4"   style="width:0%"></div>
+          <div class="plv-young"    id="plv-young-n4"    style="width:0%"></div>
+          <div class="plv-learning" id="plv-learning-n4" style="width:0%"></div>
+        </div>
+        <span class="progress-lv-count" id="plv-count-n4">0/0</span>
+      </div>
+      <div class="progress-level-row">
+        <span class="progress-lv-badge n5">N5</span>
+        <div class="progress-lv-bar-wrap">
+          <div class="plv-mature"   id="plv-mature-n5"   style="width:0%"></div>
+          <div class="plv-young"    id="plv-young-n5"    style="width:0%"></div>
+          <div class="plv-learning" id="plv-learning-n5" style="width:0%"></div>
+        </div>
+        <span class="progress-lv-count" id="plv-count-n5">0/0</span>
+      </div>
+    </div>
+
+  </div><!-- end filter-bar -->
+
+  <div class="stats">Menampilkan <strong id="statCount">0</strong> pola grammar</div>
+  <div class="cards-wrap" id="main"></div>
+</div><!-- end browsePage -->
+
+<!-- ══════════════ QUIZ PAGE ══════════════ -->
+<div id="quizPage" class="page">
+
+  <!-- SETUP -->
+  <div id="quizSetup" class="quiz-setup">
+    <h2>Pilih Quiz</h2>
+
+    <!-- Mode Toggle -->
+    <div class="quiz-mode-toggle">
+      <button class="mode-btn active" id="modeFlip" onclick="setQuizMode('flip',this)">
+        <span class="mode-icon">📖</span>
+        <span class="mode-label">Flip Card</span>
+        <span class="mode-desc">Self-assess grammar</span>
+      </button>
+      <button class="mode-btn" id="modeFill" onclick="setQuizMode('fill',this)">
+        <span class="mode-icon">✏️</span>
+        <span class="mode-label">Fill In</span>
+        <span class="mode-desc">Kalimat berlubang</span>
+      </button>
+    </div>
+
+    <!-- Quick Review banner (SRS due) -->
+    <div class="quick-review-card" id="quickReviewCard" style="display:none">
+      <div class="qr-left">
+        <span class="qr-icon">⚡</span>
+        <div>
+          <div class="qr-title">Quick Review</div>
+          <div class="qr-sub"><span id="qrDueCount">0</span> kartu jatuh tempo hari ini</div>
+        </div>
+      </div>
+      <button class="qr-btn" onclick="startQuickReview()">Mulai →</button>
+    </div>
+
+    <div class="quiz-section-divider" id="quizDivider" style="display:none">
+      <span>atau pilih manual</span>
+    </div>
+
+    <!-- Level pills -->
+    <div class="quiz-option-group">
+      <span class="quiz-option-label">Level</span>
+      <div class="level-pills" style="margin-top:0.35rem">
+        <button class="pill quiz-level-pill active-all" onclick="quizPillLevel('all',this)">Semua</button>
+        <button class="pill quiz-level-pill" onclick="quizPillLevel('n1',this)"><span class="pill-dot" style="background:var(--n1)"></span>N1</button>
+        <button class="pill quiz-level-pill" onclick="quizPillLevel('n2',this)"><span class="pill-dot" style="background:var(--n2)"></span>N2</button>
+        <button class="pill quiz-level-pill" onclick="quizPillLevel('n3',this)"><span class="pill-dot" style="background:var(--n3)"></span>N3</button>
+        <button class="pill quiz-level-pill" onclick="quizPillLevel('n4',this)"><span class="pill-dot" style="background:var(--n4)"></span>N4</button>
+        <button class="pill quiz-level-pill" onclick="quizPillLevel('n5',this)"><span class="pill-dot" style="background:var(--n5)"></span>N5</button>
+      </div>
+    </div>
+
+    <!-- Week strip -->
+    <div class="week-strip" id="quizWeekStrip" style="margin: 0.1rem -0.9rem 0; padding: 0 0.9rem;"></div>
+
+    <!-- Kategori -->
+    <div class="quiz-option-group" id="quizCatGroup">
+      <span class="quiz-option-label">Kategori</span>
+      <div class="cat-panel show" style="position:static;border:none;padding:0.4rem 0 0;background:none;margin:0;animation:none">
+        <button class="cat-chip quiz-cat-chip active-all-cat" onclick="quizSelCat('all',this)">Semua</button>
+        <button class="cat-chip quiz-cat-chip" onclick="quizSelCat('passive',this)">Pasif</button>
+        <button class="cat-chip quiz-cat-chip" onclick="quizSelCat('causative',this)">Kausatif</button>
+        <button class="cat-chip quiz-cat-chip" onclick="quizSelCat('kasual',this)">Kasual</button>
+        <button class="cat-chip quiz-cat-chip" onclick="quizSelCat('inferensi',this)">Inferensi</button>
+        <button class="cat-chip quiz-cat-chip" onclick="quizSelCat('ekspresi',this)">Ekspresi</button>
+        <button class="cat-chip quiz-cat-chip" onclick="quizSelCat('tujuan',this)">Tujuan</button>
+        <button class="cat-chip quiz-cat-chip" onclick="quizSelCat('perubahan',this)">Perubahan</button>
+        <button class="cat-chip quiz-cat-chip" onclick="quizSelCat('keharusan',this)">Keharusan</button>
+        <button class="cat-chip quiz-cat-chip" onclick="quizSelCat('niat',this)">Niat</button>
+        <button class="cat-chip quiz-cat-chip" onclick="quizSelCat('harapan',this)">Harapan</button>
+        <button class="cat-chip quiz-cat-chip" onclick="quizSelCat('permintaan',this)">Permintaan</button>
+        <button class="cat-chip quiz-cat-chip" onclick="quizSelCat('kebiasaan',this)">Kebiasaan</button>
+      </div>
+    </div>
+
+    <button class="quiz-start-btn" onclick="startQuiz()">Mulai Quiz</button>
+  </div>
+
+  <!-- ACTIVE QUIZ (Flip Card) -->
+  <div id="quizActive" style="display:none">
+    <div class="quiz-topbar">
+      <div class="quiz-progress">
+        <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressFill"></div></div>
+        <span class="quiz-progress-txt" id="quizProgressTxt">0 / 0</span>
+      </div>
+      <button class="quiz-end-btn" onclick="confirmEndQuiz()" title="Akhiri quiz">✕ Akhiri</button>
+    </div>
+    <div class="quiz-score" id="quizScoreTxt">✅ 0 &nbsp; 😅 0 &nbsp; ❌ 0</div>
+
+    <div class="quiz-card-wrap" id="quizCardWrap" onclick="flipQuizCard()">
+      <div class="swipe-hint-overlay" id="swipeOverlay"></div>
+      <div class="quiz-flip-inner">
+        <div class="quiz-face front">
+          <div class="quiz-face-label">Grammar</div>
+          <div class="qgrammar" id="qGrammar"></div>
+          <div class="qreading" id="qReading"></div>
+          <div class="qmeaning" id="qMeaning"></div>
+          <div class="quiz-tap-hint">tap untuk lihat jawaban · setelah flip, swipe ← → ↓ untuk nilai</div>
+        </div>
+        <div class="quiz-face back">
+          <div class="quiz-face-label">Penjelasan</div>
+          <div class="qdesc" id="qDesc"></div>
+          <div class="qexamples" id="qExamples"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="assess-btns" id="assessBtns">
+      <button class="assess-btn know"   onclick="assess('know')">✅<span>Hafal</span></button>
+      <button class="assess-btn unsure" onclick="assess('unsure')">😅<span>Ragu</span></button>
+      <button class="assess-btn forgot" onclick="assess('forgot')">❌<span>Lupa</span></button>
+    </div>
+  </div>
+
+  <!-- MODAL KONFIRMASI AKHIRI -->
+  <div class="modal-overlay" id="endQuizModal">
+    <div class="confirm-modal">
+      <div class="confirm-icon">⚠️</div>
+      <div class="confirm-title">Akhiri Quiz?</div>
+      <div class="confirm-sub">Kamu sudah menjawab <strong id="confirmDone">0</strong> dari <strong id="confirmTotal">0</strong> kartu.<br>Progress yang sudah direkam tetap tersimpan.</div>
+      <div class="confirm-btns">
+        <button class="confirm-btn-cancel" onclick="cancelEndQuiz()">Lanjutkan</button>
+        <button class="confirm-btn-ok"    onclick="doEndQuiz()">Ya, Akhiri</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILL-IN ACTIVE QUIZ -->
+  <div id="fillInActive" style="display:none">
+    <div class="quiz-topbar">
+      <div class="quiz-progress">
+        <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="fillProgressFill"></div></div>
+        <span class="quiz-progress-txt" id="fillProgressTxt">0 / 0</span>
+      </div>
+      <button class="quiz-end-btn" onclick="endFillQuiz()" title="Akhiri">✕ Akhiri</button>
+    </div>
+    <div class="quiz-score" id="fillScoreTxt">✅ 0 &nbsp; ❌ 0</div>
+    <div class="fill-card" id="fillCard">
+      <div class="fill-level-badge" id="fillLevelBadge">N3</div>
+      <div class="fill-sentence" id="fillSentence"></div>
+      <div class="fill-grammar-hint" id="fillGrammarHint"></div>
+      <div class="fill-choices" id="fillChoices"></div>
+      <div class="fill-feedback" id="fillFeedback" style="display:none">
+        <div class="fill-feedback-verdict" id="fillVerdict"></div>
+        <div class="fill-explanation" id="fillExplanation"></div>
+        <button class="fill-next-btn" onclick="fillNext()">Lanjut →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HASIL -->
+  <div id="quizResult" style="display:none" class="quiz-result">
+    <canvas id="confettiCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:999;width:100%;height:100%"></canvas>
+    <div class="result-ring-wrap">
+      <svg class="result-ring" viewBox="0 0 120 120">
+        <circle class="ring-bg" cx="60" cy="60" r="52"/>
+        <circle class="ring-fill" id="ringFill" cx="60" cy="60" r="52" style="stroke-dashoffset:327"/>
+      </svg>
+      <div class="result-ring-inner">
+        <div class="result-pct" id="resultPct">0%</div>
+        <div class="result-pct-label">skor</div>
+      </div>
+    </div>
+    <div class="result-title" id="resultTitle">Luar Biasa!</div>
+    <div class="result-sub" id="resultSubtitle"></div>
+    <div class="result-stats">
+      <div class="rs-item know">
+        <div class="rs-num" id="rKnow">0</div>
+        <div class="rs-label">✅ Hafal</div>
+      </div>
+      <div class="rs-item unsure">
+        <div class="rs-num" id="rUnsure">0</div>
+        <div class="rs-label">😅 Ragu</div>
+      </div>
+      <div class="rs-item forgot">
+        <div class="rs-num" id="rForgot">0</div>
+        <div class="rs-label">❌ Lupa</div>
+      </div>
+    </div>
+    <div class="result-srs-hint" id="resultSrsHint" style="display:none">
+      <span class="srs-hint-icon">🧠</span>
+      <span id="resultSrsText"></span>
+    </div>
+    <button class="retry-btn" id="retryMissedBtn" onclick="retryMissed()" style="display:none">
+      🔄 Ulangi yang Salah (<span id="missedCount">0</span>)
+    </button>
+    <button class="back-to-menu-btn" onclick="restartQuiz()">Kembali ke Menu Quiz</button>
+  </div>
+
+</div><!-- end quizPage -->
+
+<!-- STREAK BROKEN MODAL -->
+<div class="modal-overlay" id="streakBrokenModal">
+  <div class="confirm-modal streak-broken-modal">
+    <div class="streak-broken-fire" id="streakBrokenFire">🔥</div>
+    <div class="confirm-title">Streak Putus...</div>
+    <div class="streak-broken-sub">Tapi hari ini kamu udah kembali! Streak baru dimulai 💪</div>
+    <div class="streak-tip-box" id="streakTipText"></div>
+    <button class="quiz-start-btn" style="margin-top:1rem" onclick="closeStreakBroken()">Oke, Semangat Lagi!</button>
+  </div>
+</div>
+
+<!-- DATA (urutan penting!) -->
+<script src="./data/n3-w1.js"></script>
+<script src="./data/dummy.js"></script>
+<script src="./data/bank-soal.js"></script>
+<script src="./data/index.js"></script>
+
+<!-- JS (urutan penting!) -->
+<script src="./js/browse.js"></script>
+<script src="./js/quiz.js"></script>
+<script src="./js/fillin.js"></script>
+<script src="./js/srs.js"></script>
+<script src="./js/app.js"></script>
+
+</body>
+</html>
