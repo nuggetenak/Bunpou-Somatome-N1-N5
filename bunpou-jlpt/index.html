@@ -102,19 +102,26 @@
     <!-- Week strip (muncul saat level dipilih) -->
     <div class="week-strip" id="weekStrip"></div>
 
-    <!-- Row 2: Sort + Category -->
-    <div class="sort-cat-row">
-      <div class="sort-group">
-        <span class="sort-label">Urut:</span>
-        <button class="sort-btn active" onclick="setSort('level',this)">Level</button>
-        <button class="sort-btn"        onclick="setSort('cat',this)">Kategori</button>
-      </div>
-      <button class="cat-toggle-btn" id="catToggleBtn" onclick="toggleCatPanel()">Kategori ▾</button>
+    <!-- Row 2: Sort row — ID & class harus cocok dengan browse.js -->
+    <div class="sort-filter-row" id="sortFilterRow">
+      <span class="sort-label-inline">Urut:</span>
+      <button class="sort-chip active" id="sortLevelBtn" onclick="setSort('level',this)">
+        Level <span class="sort-chip-arrow" id="sortLevelArrow">▾</span>
+      </button>
+      <button class="sort-chip" onclick="setSort('cat',this)">
+        Kategori <span class="sort-chip-arrow" id="sortCatArrow">▾</span>
+      </button>
     </div>
 
-    <!-- Category panel (collapsible) -->
+    <!-- Level sort order panel (N1→N5 / N5→N1) -->
+    <div class="cat-panel" id="levelSortPanel">
+      <button class="cat-chip active-all-cat" onclick="setSortOrder('asc',this)">N1 → N5</button>
+      <button class="cat-chip" onclick="setSortOrder('desc',this)">N5 → N1</button>
+    </div>
+
+    <!-- Category panel (collapsible, dibuka via setSort('cat')) -->
     <div class="cat-panel" id="catPanel">
-      <button class="cat-chip active-all-cat" onclick="setCat('all',this)">Semua</button>
+      <button class="cat-chip active-all-cat" id="cat-all" onclick="setCat('all',this)">Semua</button>
       <button class="cat-chip" onclick="setCat('passive',this)">Pasif</button>
       <button class="cat-chip" onclick="setCat('causative',this)">Kausatif</button>
       <button class="cat-chip" onclick="setCat('kasual',this)">Kasual</button>
